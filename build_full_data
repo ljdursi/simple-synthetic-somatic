@@ -1,0 +1,10 @@
+#!/bin/bash
+
+./scripts/build_normal sim_normal genome
+./scripts/build_tumour -r genome -s 3000 -i 300 sim_normal.bam sim_tumour.bam
+
+mkdir -p output
+mv sim_normal.bam* /output
+mv sim_tumour.bam* /output
+mv somatic_variants/* /output
+rmdir somatic_variants

@@ -1,0 +1,45 @@
+#!/bin/bash
+
+readonly DEFAULTOUT=sim_normal
+readonly DEFAULTREF=genome
+readonly WHOLE_GENOME_REF=reference/genome.fa.gz
+
+readonly OUTPREFIX=${1:-${DEFAULTOUT}}
+readonly REFERENCE=reference/${2:-${DEFAULTREF}}.fa
+
+if [ ! -f "${REFERENCE}" ] 
+then
+    echo "Usage: $0 [out_prefix: default ${DEFAULTOUT}] [reference: default ${DEFAULTREF}]"
+    echo "File not found: $REFERENCE"
+    exit 1
+fi
+
+if [ -f "${OUTPREFIX}.bam" ]
+then
+    echo "$0: ${OUTPREFIX}.bam exists: not overwriting"
+    exit 1
+fi
+
+./art_bin_MountRainier/art_illumina \
+    -ss HS25 -na -sam -i "${REFERENCE}" \
+    -p -l 150 -f 30 -m 200 -s 10 -o "$OUTPREFIX"
+
+if [ ${REFERENCE}.gz != $WHOLE_GENOME_REF ]
+then
+    # if we were generating reads against a different reference (eg, a subset),
+    # don't trust the .sam output; just remap 
+    rm "${OUTPREFIX}".sam
+    bwa mem $WHOLE_GENOME_REF ${OUTPREFIX}1.fq ${OUTPREFIX}2.fq \
+        | samtools sort -o ${OUTPREFIX}.bam - \
+        && rm "${OUTPREFIX}"*fq  \
+        && samtools index "${OUTPREFIX}.bam"
+else
+    # otherwise, convert .sam to bam after patching an issue with the headers.
+    rm "${OUTPREFIX}"{1,2}.fq
+    samtools view -S ${OUTPREFIX}.sam \
+        | sed -e 's/ dna:chromosome chromosome:GRCh37:[^\t]*//' "${OUTPREFIX}.sam" \
+        | samtools sort -o "${OUTPUTPREFIX}.bam" - \
+        && rm "${OUTPREFIX}.sam"
+fi
+
+samtools index "${OUTPUTPREFIX}.bam"

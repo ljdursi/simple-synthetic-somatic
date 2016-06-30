@@ -1,0 +1,93 @@
+#!/bin/bash -x
+
+readonly DEFOUT=somatic_variants
+readonly DEFREF=genome
+readonly DEFNSNVS=3000
+readonly DEFNINDELS=300
+readonly WHOLE_GENOME_REF=reference/genome.fa.gz
+
+function usage {
+    >&2 echo "Usage: $0 [opts] normal.bam output.bam"
+    >&2 echo "       options:"
+    >&2 echo "       -d output_dir  (default: ${DEFOUT} )"
+    >&2 echo "       -r reference   (default: ${DEFREF} )"
+    >&2 echo "       -s nsnvs       (default: ${DEFNSNVS} )"
+    >&2 echo "       -i nindels     (default: ${DEFNINDELS} )"
+    exit 1
+}
+
+NSNVS=${DEFNSNVS}
+NINDELS=${DEFNINDELS}
+OUT_DIR=${DEFOUT}
+REFERENCE=reference/${DEFREF}.fa
+
+#get options
+while getopts ":d:r:s:i:" o
+do
+    case "${o}" in
+        d)
+            OUT_DIR=${OPTARG}
+            mkdir -p "${OUT_DIR}"
+            ;;
+        r)
+            REFERENCE=reference/${OPTARG}.fa
+            ;;
+        s)
+            NSNVS=${OPTARG}
+            ;;
+        i)
+            NINDELS=${OPTARG}
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+
+readonly NORMAL_BAM=$1
+readonly OUTPUT_BAM=$2
+
+if [ ! -f "${NORMAL_BAM}" ] || [ ! -f "${REFERENCE}" ] 
+then
+    echo "$0: necessary file not found.  Are ${NORMAL_BAM} and ${REFERENCE} present?"
+    usage
+fi
+
+if (( NSNVS < 0 )) || (( NSNVS > 100000 )) || (( NINDELS < 0 )) || (( NINDELS > 100000 ))
+then
+    echo "$0: invalid number of variants provided: one of ${NSNVS} ${NINDELS}"
+    usage
+fi
+
+if [ -f "${OUTPUT_BAM}" ]
+then
+    echo "$0: ${OUTPREFIX}.bam exists: not overwriting"
+    exit 1
+fi
+
+##
+## Generate somatic variants, output in $OUT_DIR
+##
+mkdir -p "${OUT_DIR}"
+./scripts/generate_variants.py -d "${OUT_DIR}" -s "${NSNVS}" -i "${NINDELS}" "${REFERENCE}"
+
+##
+## add snvs to bam
+##
+sudo docker run -it --rm -v "${PWD}":/data bamsurgeon addsnv.py \
+    -v "/data/${OUT_DIR}/truth.snv.bed" \
+    -f "/data/${NORMAL_BAM}" \
+    -r "/data/${WHOLE_GENOME_REF}" \
+    -o /data/tmp.snv.bam
+
+samtools index tmp.snv.bam
+
+##
+## add indels to bam
+##
+sudo docker run -it --rm -v "${PWD}":/data bamsurgeon addindel.py \
+    -v "/data/${OUT_DIR}/truth.indel.bed" \
+    -f /data/tmp.snv.bam \
+    -r "/data/${WHOLE_GENOME_REF}" \
+    -o "/data/${OUTPUT_BAM}"
+
+rm tmp.snv.bam
+rm tmp.snv.bam.bai

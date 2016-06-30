@@ -1,0 +1,10 @@
+#!/bin/bash
+
+./scripts/build_normal sim_norm_chr20 chr20
+./scripts/build_tumour -r chr20 -s 300 -i 30 sim_norm_chr20.bam sim_tum_chr20.bam
+
+mkdir -p output
+mv sim_norm_chr20.bam* /output
+mv sim_tum_chr20.bam* /output
+mv somatic_variants/* /output
+rmdir somatic_variants

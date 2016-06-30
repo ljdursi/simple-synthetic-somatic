@@ -1,0 +1,3 @@
+* When generating synthetic normal
+    - controled germline calls
+    - some false calls of germline as somatic
