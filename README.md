@@ -9,14 +9,14 @@ synthetic reads for a normal bam (currently hg19 with no germline mutations)
 and [BAMSurgeon](https://github.com/adamewing/bamsurgeon) to add somatic SNVs and indels.
 
 Requirements:
-    * BAMSurgeon, which requires:
-        - velvet
-        - bwa
-        - samtools, htslib
-        - bcftools
-        - picard
-        - exonerate
-    * ART (downloaded by the setup.sh script)
+* BAMSurgeon, which requires:
+  - velvet
+  - bwa
+  - samtools, htslib
+  - bcftools
+  - picard
+  - exonerate
+* ART (downloaded by the setup.sh script)
 
 ## Running
 
