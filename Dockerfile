@@ -38,21 +38,21 @@ RUN cp bwa/bwa $HOME/bin
 RUN wget https://github.com/samtools/htslib/releases/download/1.3.1/htslib-1.3.1.tar.bz2 && \
     tar -jxvf htslib-1.3.1.tar.bz2 && \
     cd htslib-1.3.1 && \
-    ./configure --prefix=/usr/local && \
+    ./configure --prefix=/usr && \
     make && \
     make install && \
     cd && \
-    rm htslib-1.3.1.tar.bz2 && \
+    rm -f htslib-1.3.1.tar.bz2 && \
     rm -rf htslib-1.3.1
 
 RUN wget https://github.com/samtools/samtools/releases/download/1.3.1/samtools-1.3.1.tar.bz2 && \
     tar -jxvf samtools-1.3.1.tar.bz2 && \
     cd samtools-1.3.1 && \
-    ./configure --prefix=/usr/local --with-htslib=/usr/local && \
+    ./configure --prefix=/usr --with-htslib=/usr && \
     make && \
     make install && \
     cd && \
-    rm samtools-1.3.1.tar.bz2 && \
+    rm -f samtools-1.3.1.tar.bz2 && \
     rm -rf samtools-1.3.1
 
 RUN wget https://github.com/samtools/bcftools/releases/download/1.3.1/bcftools-1.3.1.tar.bz2 && \
@@ -61,7 +61,7 @@ RUN wget https://github.com/samtools/bcftools/releases/download/1.3.1/bcftools-1
     make && \
     cp bcftools $HOME/bin && \
     cd && \
-    rm bcftools-1.3.1.tar.bz2
+    rm -f bcftools-1.3.1.tar.bz2
 
 RUN wget https://github.com/broadinstitute/picard/releases/download/1.131/picard-tools-1.131.zip
 RUN unzip picard-tools-1.131.zip
@@ -72,7 +72,7 @@ RUN cd exonerate && ./configure --disable-dependency-tracking && make && make in
 RUN git clone https://github.com/adamewing/bamsurgeon.git
 RUN cd bamsurgeon && python setup.py install
 
-RUN cp /root/bin/* /usr/local/bin
+RUN cp /root/bin/* /usr/bin
 
 ADD . .
 RUN ./setup.sh
