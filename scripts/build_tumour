@@ -72,22 +72,22 @@ mkdir -p "${OUT_DIR}"
 ##
 ## add snvs to bam
 ##
-sudo docker run -it --rm -v "${PWD}":/data bamsurgeon addsnv.py \
-    -v "/data/${OUT_DIR}/truth.snv.bed" \
-    -f "/data/${NORMAL_BAM}" \
-    -r "/data/${WHOLE_GENOME_REF}" \
-    -o /data/tmp.snv.bam
+addsnv.py \
+    -v "${OUT_DIR}/truth.snv.bed" \
+    -f "${NORMAL_BAM}" \
+    -r "${WHOLE_GENOME_REF}" \
+    -o /tmp.snv.bam
 
 samtools index tmp.snv.bam
 
 ##
 ## add indels to bam
 ##
-sudo docker run -it --rm -v "${PWD}":/data bamsurgeon addindel.py \
-    -v "/data/${OUT_DIR}/truth.indel.bed" \
-    -f /data/tmp.snv.bam \
-    -r "/data/${WHOLE_GENOME_REF}" \
-    -o "/data/${OUTPUT_BAM}"
+addindel.py \
+    -v "${OUT_DIR}/truth.indel.bed" \
+    -f tmp.snv.bam \
+    -r "${WHOLE_GENOME_REF}" \
+    -o "${OUTPUT_BAM}"
 
 rm tmp.snv.bam
 rm tmp.snv.bam.bai
