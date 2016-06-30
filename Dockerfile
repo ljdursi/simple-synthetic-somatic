@@ -15,6 +15,7 @@ RUN apt-get install -y \
     zlib1g-dev \
     git \
     wget \
+    libtool \
     libncurses5-dev \
     libglib2.0-dev \
     unzip
@@ -23,8 +24,6 @@ RUN pip install cython
 RUN pip install pysam
 
 RUN mkdir $HOME/bin
-RUN export PATH=$PATH:/root/bin
-RUN echo 'PATH=$PATH:/root/bin' >> /root/.bashrc
 
 RUN wget https://www.ebi.ac.uk/~zerbino/velvet/velvet_1.2.10.tgz
 RUN tar xvzf velvet_1.2.10.tgz
@@ -41,20 +40,28 @@ RUN wget https://github.com/samtools/htslib/releases/download/1.3.1/htslib-1.3.1
     cd htslib-1.3.1 && \
     ./configure --prefix=/usr/local && \
     make && \
-    make install
+    make install && \
+    cd && \
+    rm htslib-1.3.1.tar.bz2 && \
+    rm -rf htslib-1.3.1
 
 RUN wget https://github.com/samtools/samtools/releases/download/1.3.1/samtools-1.3.1.tar.bz2 && \
     tar -jxvf samtools-1.3.1.tar.bz2 && \
     cd samtools-1.3.1 && \
-    ./configure --prefix=/usr/lib --with-htslib=/usr/local && \
+    ./configure --prefix=/usr/local --with-htslib=/usr/local && \
     make && \
-    make install
+    make install && \
+    cd && \
+    rm samtools-1.3.1.tar.bz2 && \
+    rm -rf samtools-1.3.1
 
 RUN wget https://github.com/samtools/bcftools/releases/download/1.3.1/bcftools-1.3.1.tar.bz2 && \
     tar -jxvf bcftools-1.3.1.tar.bz2 && \
     cd bcftools-1.3.1 && \
     make && \
-    cp bcftools $HOME/bin
+    cp bcftools $HOME/bin && \
+    cd && \
+    rm bcftools-1.3.1.tar.bz2
 
 RUN wget https://github.com/broadinstitute/picard/releases/download/1.131/picard-tools-1.131.zip
 RUN unzip picard-tools-1.131.zip
