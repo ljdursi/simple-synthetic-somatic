@@ -1,10 +1,12 @@
 #!/bin/bash
 
+readonly OUTDIR=${1:-/output}
+
 ./scripts/build_normal sim_normal genome
 ./scripts/build_tumour -r genome -s 3000 -i 300 sim_normal.bam sim_tumour.bam
 
 mkdir -p output
-mv sim_normal.bam* /output
-mv sim_tumour.bam* /output
-mv somatic_variants/* /output
+mv sim_normal.bam* "${OUTDIR}"
+mv sim_tumour.bam* "${OUTDIR}"
+mv somatic_variants/* "${OUTDIR}"
 rmdir somatic_variants
