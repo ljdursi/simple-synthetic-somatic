@@ -1,7 +1,8 @@
 FROM ubuntu:14.04
 MAINTAINER Jonathan Dursi <jonathan@dursi.ca>
 
-WORKDIR /root
+ENV BASEDIR /root
+WORKDIR ${BASEDIR}
 
 RUN apt-get update && apt-get install -y software-properties-common
 
@@ -24,17 +25,17 @@ RUN apt-get install -y \
 RUN pip install cython
 RUN pip install pysam
 
-RUN mkdir $HOME/bin
+RUN mkdir ${BASEDIR}/bin
 
 RUN wget https://www.ebi.ac.uk/~zerbino/velvet/velvet_1.2.10.tgz
 RUN tar xvzf velvet_1.2.10.tgz
 RUN make -C velvet_1.2.10
-RUN cp velvet_1.2.10/velvetg $HOME/bin
-RUN cp velvet_1.2.10/velveth $HOME/bin
+RUN cp velvet_1.2.10/velvetg $BASEDIR/bin
+RUN cp velvet_1.2.10/velveth $BASEDIR/bin
 
 RUN git clone https://github.com/lh3/bwa.git
 RUN make -C bwa
-RUN cp bwa/bwa $HOME/bin
+RUN cp bwa/bwa $BASEDIR/bin
 
 RUN wget https://github.com/samtools/htslib/releases/download/1.3.1/htslib-1.3.1.tar.bz2 && \
     tar -jxvf htslib-1.3.1.tar.bz2 && \
@@ -60,7 +61,7 @@ RUN wget https://github.com/samtools/bcftools/releases/download/1.3.1/bcftools-1
     tar -jxvf bcftools-1.3.1.tar.bz2 && \
     cd bcftools-1.3.1 && \
     make && \
-    cp bcftools $HOME/bin && \
+    cp bcftools $BASEDIR/bin && \
     cd && \
     rm -f bcftools-1.3.1.tar.bz2
 
@@ -73,9 +74,9 @@ RUN cd exonerate && ./configure --disable-dependency-tracking && make && make in
 RUN git clone https://github.com/adamewing/bamsurgeon.git
 RUN cd bamsurgeon && python setup.py install
 
-RUN cp /root/bin/* /usr/bin
+RUN cp ${BASEDIR}/bin/* /usr/bin
 
-ADD . .
-RUN ./setup.sh
+ADD . ${BASEDIR}
+RUN ${BASEDIR}/setup.sh
 
-VOLUME /root/reference
+VOLUME ${BASEDIR}/reference
