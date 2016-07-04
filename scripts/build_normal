@@ -5,7 +5,7 @@ readonly DEFAULTREF=genome
 readonly WHOLE_GENOME_REF=reference/genome.fa.gz
 
 readonly OUTPREFIX=${1:-${DEFAULTOUT}}
-readonly REFERENCE=reference/${2:-${DEFAULTREF}}.fa
+readonly REFERENCE=reference/${2:-${DEFAULTREF}}.fa.gz
 
 if [ ! -f "${REFERENCE}" ] 
 then
@@ -20,11 +20,19 @@ then
     exit 1
 fi
 
+# ART needs reference as uncompressed; appears to need to 
+# seek within, so process substitution won't work
+
+readonly FASTA_REF=$$.fa
+zcat "${REFERENCE}" > "${FASTA_REF}"
+
 ./art_bin_MountRainier/art_illumina \
-    -ss HS25 -na -sam -i "${REFERENCE}" \
+    -ss HS25 -na -sam -i "${FASTA_REF}" \
     -p -l 150 -f 30 -m 200 -s 10 -o "$OUTPREFIX"
 
-if [ ${REFERENCE}.gz != $WHOLE_GENOME_REF ]
+rm "${FASTA_REF}"
+
+if [ ${REFERENCE} != $WHOLE_GENOME_REF ]
 then
     # if we were generating reads against a different reference (eg, a subset),
     # don't trust the .sam output; just remap 
