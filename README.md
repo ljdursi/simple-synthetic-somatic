@@ -42,7 +42,7 @@ that include false positives and negatives, and truth datasets.  Similarly,
 The provided Dockerfile allows running these tools as a container:
 
 ```
-docker build -t simple-synthetic-somatic .
-docker run -it -v .:/output simple-synthetic-somatic build_small_data
-docker run -it -v .:/output simple-synthetic-somatic build_full_data
+docker build -t simple_synthetic_somatic .
+docker run -it -v ${PWD}:/output simple_synthetic_somatic build_small_data
+docker run -it -v ${PWD}:/output simple_synthetic_somatic build_full_data
 ```
