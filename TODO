@@ -1,3 +1,4 @@
-* When generating synthetic normal
+* Better germline normals
     - controled germline calls
     - some false calls of germline as somatic
+* Re-map edited tumour reads
