@@ -54,7 +54,7 @@ class Caller(object):
         self.snvs = sorted(self.snvs)
         self.indels = sorted(self.indels)
 
-    def toVCF(self, filename, directory, snvs=True, indels=True):
+    def toVCF(self, filename, directory, snvs=False, indels=False):
         "Output to a VCF file with given filename; optionally output variant types"
         variants = []
         if snvs:
@@ -220,7 +220,9 @@ def main():
     truth.toBamSurgeonBED("truth.indel.bed", args.out_dir, snvs=False, indels=True)
     for i in range(args.num_callers):
         callername = "caller"+str(i)
-        Caller(callername, valid_snvs, invalid_snvs, valid_indels, invalid_indels).toVCF(callername+".vcf", args.out_dir)
+        caller = Caller(callername, valid_snvs, invalid_snvs, valid_indels, invalid_indels, indels=False)
+        caller.toVCF(callername+".snv.vcf", args.out_dir, snvs=True)
+        caller.toVCF(callername+".indel.vcf", args.out_dir, indels=True)
 
     return 0
 
