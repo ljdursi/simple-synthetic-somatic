@@ -27,15 +27,15 @@ RUN pip install pysam
 
 RUN mkdir ${BASEDIR}/bin
 
-RUN wget https://www.ebi.ac.uk/~zerbino/velvet/velvet_1.2.10.tgz
-RUN tar xvzf velvet_1.2.10.tgz
-RUN make -C velvet_1.2.10
-RUN cp velvet_1.2.10/velvetg $BASEDIR/bin
-RUN cp velvet_1.2.10/velveth $BASEDIR/bin
+RUN wget https://www.ebi.ac.uk/~zerbino/velvet/velvet_1.2.10.tgz && \
+    tar xvzf velvet_1.2.10.tgz && \
+    make -C velvet_1.2.10 && \
+    cp velvet_1.2.10/velvet{g,h} $BASEDIR/bin && \
+    rm -f velvet_1.2.10.tgz
 
-RUN git clone https://github.com/lh3/bwa.git
-RUN make -C bwa
-RUN cp bwa/bwa $BASEDIR/bin
+RUN git clone https://github.com/lh3/bwa.git && \
+    make -C bwa && \
+    cp bwa/bwa $BASEDIR/bin
 
 RUN wget https://github.com/samtools/htslib/releases/download/1.3.1/htslib-1.3.1.tar.bz2 && \
     tar -jxvf htslib-1.3.1.tar.bz2 && \
@@ -65,8 +65,9 @@ RUN wget https://github.com/samtools/bcftools/releases/download/1.3.1/bcftools-1
     cd && \
     rm -f bcftools-1.3.1.tar.bz2
 
-RUN wget https://github.com/broadinstitute/picard/releases/download/1.131/picard-tools-1.131.zip
-RUN unzip picard-tools-1.131.zip
+RUN wget https://github.com/broadinstitute/picard/releases/download/1.131/picard-tools-1.131.zip && \
+    unzip picard-tools-1.131.zip && \
+    rm picard-tools-1.131.zip
 
 RUN git clone https://github.com/adamewing/exonerate.git
 RUN cd exonerate && ./configure --disable-dependency-tracking && make && make install
@@ -77,6 +78,8 @@ RUN cd bamsurgeon && python setup.py install
 RUN cp ${BASEDIR}/bin/* /usr/bin
 
 ADD . ${BASEDIR}
+RUN mv ${BASEDIR}/generate /usr/bin
 RUN ${BASEDIR}/setup.sh
 
-VOLUME ${BASEDIR}/reference
+ENTRYPOINT ["/usr/bin/generate"]
+CMD ["small"]

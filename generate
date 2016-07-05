@@ -1,0 +1,9 @@
+#!/bin/bash
+
+cd /root
+if [[ "$1" == "full" ]]
+then
+    ./build_full_data
+else
+    ./build_small_data
+fi
