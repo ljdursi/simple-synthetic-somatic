@@ -43,6 +43,6 @@ The provided Dockerfile allows running these tools as a container:
 
 ```
 docker build -t simple_synthetic_somatic .
-docker run -it -v ${PWD}:/output simple_synthetic_somatic build_small_data
-docker run -it -v ${PWD}:/output simple_synthetic_somatic build_full_data
+docker run -it -v ${PWD}:/output simple_synthetic_somatic generate small   # generates data for chr20
+docker run -it -v ${PWD}:/output simple_synthetic_somatic generate full    # generates whole-genome data
 ```
