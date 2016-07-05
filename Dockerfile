@@ -30,7 +30,7 @@ RUN mkdir ${BASEDIR}/bin
 RUN wget https://www.ebi.ac.uk/~zerbino/velvet/velvet_1.2.10.tgz && \
     tar xvzf velvet_1.2.10.tgz && \
     make -C velvet_1.2.10 && \
-    cp velvet_1.2.10/velvet{g,h} $BASEDIR/bin && \
+    cp velvet_1.2.10/velvetg velvet_1.2.10/velveth $BASEDIR/bin && \
     rm -f velvet_1.2.10.tgz
 
 RUN git clone https://github.com/lh3/bwa.git && \
