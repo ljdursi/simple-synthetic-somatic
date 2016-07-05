@@ -11,6 +11,7 @@ function compress_and_index {
     bgzip -i "$file"
     samtools faidx "${file}.gz"
     bwa index "${file}.gz"
+    zcat "${file}.gz" > "${file}"
 }
 
 wget "${URL}/genome.fa.gz"
