@@ -76,7 +76,7 @@ addsnv.py \
     -v "${OUT_DIR}/truth.snv.bed" \
     -f "${NORMAL_BAM}" \
     -r "${WHOLE_GENOME_REF}" \
-    -o /tmp.snv.bam
+    -o tmp.snv.bam
 
 samtools index tmp.snv.bam
 
