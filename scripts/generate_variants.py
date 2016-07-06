@@ -73,6 +73,7 @@ class Caller(object):
                 print('{}\t{}\t.\t{}\t{}\t.\t.\t.'.format(chrom, pos, ref, alt), file=out)
 
     def toBamSurgeonBED(self, filename, directory, snvs=True, indels=True):
+        # Not really BED - 1-indexed like VCF
         variants = []
         if snvs:
             variants += self.snvs
@@ -90,13 +91,13 @@ class Caller(object):
         with open(directory+"/"+filename, 'w') as out:
             for chrom, pos, ref, alt in variants:
                 if len(ref) == len(alt):
-                    print('{}\t{}\t{}\t{}\t{}'.format(chrom, pos-1, pos-1, get_vaf(), alt), file=out)
+                    print('{}\t{}\t{}\t{}\t{}'.format(chrom, pos, pos, get_vaf(), alt), file=out)
                 else:
                     #indel
                     endpos = pos+len(ref)
                     varstr = alt[1:] if len(ref) < len(alt) else ref[1:]
                     vartype = "INS" if len(ref) < len(alt) else "DEL"
-                    print('{}\t{}\t{}\t{}\t{}\t{}'.format(chrom, pos-1, endpos-1, get_vaf(), vartype, varstr), file=out)
+                    print('{}\t{}\t{}\t{}\t{}\t{}'.format(chrom, pos, endpos, get_vaf(), vartype, varstr), file=out)
 
 
 def locations_from_starts(starts, cumulative_sizes):
