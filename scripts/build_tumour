@@ -76,8 +76,10 @@ addsnv.py \
     -v "${OUT_DIR}/truth.snv.bed" \
     -f "${NORMAL_BAM}" \
     -r "${WHOLE_GENOME_REF}" \
-    -o tmp.snv.bam
+    -o tmp.snv.unsorted.bam
 
+samtools sort -o tmp.snv.bam tmp.snv.unsorted.bam
+rm tmp.snv.unsorted.bam
 samtools index tmp.snv.bam
 
 ##
@@ -87,7 +89,10 @@ addindel.py \
     -v "${OUT_DIR}/truth.indel.bed" \
     -f tmp.snv.bam \
     -r "${WHOLE_GENOME_REF}" \
-    -o "${OUTPUT_BAM}"
+    -o tmp.indel.unsorted.bam
 
-rm tmp.snv.bam
+samtools sort -o "${OUTPUT_BAM}" tmp.indel.unsorted.bam
+samtools index "${OUTPUT_BAM}"
+rm tmp.snv.bam tmp.indel.unsorted.bam
 rm tmp.snv.bam.bai
+${OUTPUT_BAM}"
