@@ -171,7 +171,7 @@ def variants_from_genome(fasta, n_snvs, n_indels, max_indel_size):
     Reads a genome file (.fasta), selects n valid snvs and indels
     given the parameters.
     """
-    valid_chromosomes = [str(i) for i in range(1,22)] + ["X", "Y"]
+    valid_chromosomes = [str(i) for i in range(1, 22)] + ["X", "Y"]
     genome = readfasta(fasta)
     genome = [(chrom, seq) for chrom, seq in genome \
                             if chrom in valid_chromosomes]
@@ -211,16 +211,16 @@ def main():
                                       5*args.num_indels, args.max_indel_size)
 
     valid_snvs, invalid_snvs = select_valid(snv, args.num_snvs)
-    valid_indels, invalid_indels = select_valid(indel, args.num_snvs)
+    valid_indels, invalid_indels = select_valid(indel, args.num_indels)
 
     truth = Caller("truth", valid_snvs, [], valid_indels, [], sensitivity=1., precision=1.)
-    truth.toVCF("truth.vcf", args.out_dir)
+    truth.toVCF("truth.vcf", args.out_dir, snvs=True, indels=True)
 
     truth.toBamSurgeonBED("truth.snv.bed", args.out_dir, snvs=True, indels=False)
     truth.toBamSurgeonBED("truth.indel.bed", args.out_dir, snvs=False, indels=True)
     for i in range(args.num_callers):
         callername = "caller"+str(i)
-        caller = Caller(callername, valid_snvs, invalid_snvs, valid_indels, invalid_indels, indels=False)
+        caller = Caller(callername, valid_snvs, invalid_snvs, valid_indels, invalid_indels)
         caller.toVCF(callername+".snv.vcf", args.out_dir, snvs=True)
         caller.toVCF(callername+".indel.vcf", args.out_dir, indels=True)
 
