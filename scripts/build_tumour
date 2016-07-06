@@ -95,4 +95,3 @@ samtools sort -o "${OUTPUT_BAM}" tmp.indel.unsorted.bam
 samtools index "${OUTPUT_BAM}"
 rm tmp.snv.bam tmp.indel.unsorted.bam
 rm tmp.snv.bam.bai
-${OUTPUT_BAM}"
