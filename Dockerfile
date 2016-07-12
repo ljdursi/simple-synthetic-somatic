@@ -27,7 +27,7 @@ RUN pip install pysam
 
 RUN mkdir ${BASEDIR}/bin
 
-RUN wget https://www.ebi.ac.uk/~zerbino/velvet/velvet_1.2.10.tgz && \
+RUN wget -nv https://www.ebi.ac.uk/~zerbino/velvet/velvet_1.2.10.tgz && \
     tar xvzf velvet_1.2.10.tgz && \
     make -C velvet_1.2.10 && \
     cp velvet_1.2.10/velvetg velvet_1.2.10/velveth $BASEDIR/bin && \
@@ -37,7 +37,7 @@ RUN git clone https://github.com/lh3/bwa.git && \
     make -C bwa && \
     cp bwa/bwa $BASEDIR/bin
 
-RUN wget https://github.com/samtools/htslib/releases/download/1.3.1/htslib-1.3.1.tar.bz2 && \
+RUN wget -nv https://github.com/samtools/htslib/releases/download/1.3.1/htslib-1.3.1.tar.bz2 && \
     tar -jxvf htslib-1.3.1.tar.bz2 && \
     cd htslib-1.3.1 && \
     ./configure --prefix=/usr && \
@@ -47,7 +47,7 @@ RUN wget https://github.com/samtools/htslib/releases/download/1.3.1/htslib-1.3.1
     rm -f htslib-1.3.1.tar.bz2 && \
     rm -rf htslib-1.3.1
 
-RUN wget https://github.com/samtools/samtools/releases/download/1.3.1/samtools-1.3.1.tar.bz2 && \
+RUN wget -nv https://github.com/samtools/samtools/releases/download/1.3.1/samtools-1.3.1.tar.bz2 && \
     tar -jxvf samtools-1.3.1.tar.bz2 && \
     cd samtools-1.3.1 && \
     ./configure --prefix=/usr --with-htslib=/usr && \
@@ -57,7 +57,7 @@ RUN wget https://github.com/samtools/samtools/releases/download/1.3.1/samtools-1
     rm -f samtools-1.3.1.tar.bz2 && \
     rm -rf samtools-1.3.1
 
-RUN wget https://github.com/samtools/bcftools/releases/download/1.3.1/bcftools-1.3.1.tar.bz2 && \
+RUN wget -nv https://github.com/samtools/bcftools/releases/download/1.3.1/bcftools-1.3.1.tar.bz2 && \
     tar -jxvf bcftools-1.3.1.tar.bz2 && \
     cd bcftools-1.3.1 && \
     make && \
@@ -65,7 +65,7 @@ RUN wget https://github.com/samtools/bcftools/releases/download/1.3.1/bcftools-1
     cd && \
     rm -f bcftools-1.3.1.tar.bz2
 
-RUN wget https://github.com/broadinstitute/picard/releases/download/1.131/picard-tools-1.131.zip && \
+RUN wget -nv https://github.com/broadinstitute/picard/releases/download/1.131/picard-tools-1.131.zip && \
     unzip picard-tools-1.131.zip && \
     rm picard-tools-1.131.zip
 
