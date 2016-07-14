@@ -1,0 +1,81 @@
+#!/bin/bash
+
+readonly TMPDIR=tmp.$$
+readonly DEFSEED=123
+readonly DEFDEPTHFACTOR=34
+readonly DEFOUTPUTBAM="output.bam"
+
+INPUTBAM=none
+VCFFILE=none
+
+function usage {
+    >&2 echo "Usage: $0 [opts] input.bam input.vcf"
+    >&2 echo "       Oversamples bams around regions specified in VCF"
+    >&2 echo "       to generate synthetic validation data."
+    >&2 echo ""
+    >&2 echo "       Options:"
+    >&2 echo "       -d depth_factor  (default: ${DEFDEPTHFACTOR})"
+    >&2 echo "       -b bamfile       (required)"
+    >&2 echo "       -v vcffile       (required)"
+    >&2 echo "       -s initial_seed  (default: ${DEFSEED})"
+    >&2 echo "       -o output.bam    (default: ${DEFOUTPUTBAM})"
+    exit 1
+}
+
+function snv_indel_vcf_to_bed {
+    local vcffile=$1
+    awk '$1 !~ /^#/{
+                    delta=length($5)-length($4);
+                    if (delta < 0) delta=-delta;
+                    printf "%s\t%d\t%d\n", $1, $2-101, $2+delta+100
+                   }' "${vcffile}" \
+        | bedtools sort 
+}
+
+DEPTHFACTOR="${DEFDEPTHFACTOR}"
+OUTPUTBAM="${DEFOUTPUTBAM}"
+SEED="${DEFSEED}"
+
+#get options
+while getopts ":d:b:v:o:s:" o
+do
+    case "${o}" in
+        d) DEPTHFACTOR=${OPTARG} ;;
+        b) INPUTBAM=${OPTARG} ;;
+        v) VCFFILE=${OPTARG} ;;
+        o) OUTPUTBAM=${OPTARG} ;;
+        s) SEED=${OPTARG} ;;
+    esac
+done
+shift $((OPTIND-1))
+
+if [ "${INPUTBAM}" == "none" ] || [ ! -f "${INPUTBAM}" ]
+then
+    echo "$0: required bam file not found: ${INPUTBAM}"
+    usage
+fi
+
+if [ "${VCFFILE}" == "none" ] || [ ! -f "${VCFFILE}" ]
+then
+    echo "$0: required vcf file not found: ${VCFFILE}"
+    usage
+fi
+
+mkdir -p "${TMPDIR}"
+readonly BEDFILE="${TMPDIR}/regions.bed"
+snv_indel_vcf_to_bed "${VCFFILE}" > "${BEDFILE}"
+
+# repeatedly resample BAM file
+readonly NITERS=$(( DEPTHFACTOR*2 ))
+for iter in $( seq "${NITERS}" )
+do
+    samtools view -b -s $(( SEED+iter )).50 -L "${BEDFILE}" -o "${TMPDIR}"/"${iter}".bam "${INPUTBAM}" 
+done
+
+# merge resamples
+samtools merge $$.tmp.bam "${TMPDIR}"/*.bam 
+samtools sort -o "${OUTPUTBAM}" $$.tmp.bam
+rm -f $$.tmp.bam
+
+samtools index ${OUTPUTBAM}
+rm -rf "${TMPDIR}"

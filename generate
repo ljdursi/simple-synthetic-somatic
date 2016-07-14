@@ -3,7 +3,17 @@
 cd /root
 if [[ "$1" == "full" ]]
 then
-    ./build_full_data
+    ./build_full_data "$@"
+elif [[ "$1" == "small" ]]
+then
+    ./build_small_data "$@"
+elif [[ "$1" == "supersample" ]]
+then
+    ./supersample "$@"
 else
-    ./build_small_data
+    >&2 echo "Usage: ${0} [full|small|supersample]"
+    >&2 echo ""
+    >&2 echo "       full:        generate synthetic WGS tumour/normal data"
+    >&2 echo "       small:       generate synthetic WGS tumour/normal data for chr20"
+    >&2 echo "       supersample: resample bam for synthetic validation data"
 fi
