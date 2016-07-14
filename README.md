@@ -36,6 +36,13 @@ that include false positives and negatives, and truth datasets.  Similarly,
 
 (which will take much longer) will generate synthetic data for the whole genome.
 
+In addition, a bam (tumour or normal) may be oversampled at sites given by variants in a VCF to (very crudely) simulate
+validation data:
+
+```
+./supersample -b sim_normal.bam -v variant_targets.vcf -o sim_validation_normal.bam
+./supersample -b sim_tumour.bam -v variant_targets.vcf -o sim_validation_tumour.bam
+```
 
 ## Running with Docker
 
@@ -45,4 +52,5 @@ The provided Dockerfile allows running these tools as a container:
 docker build -t simple_synthetic_somatic .
 docker run -it -v ${PWD}:/output simple_synthetic_somatic generate small   # generates data for chr20
 docker run -it -v ${PWD}:/output simple_synthetic_somatic generate full    # generates whole-genome data
+docker run -it -v ${PWD}:/output simple_synthetic_somatic generate supersample -b small/sim_normal.bam -v small/truth.vcf -o small/sim_validation.bam
 ```
